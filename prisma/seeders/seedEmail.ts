@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+export async function seedEmail(prisma: PrismaClient) {
+  console.log("🌱 Seeding email details...");
 
-async function main() {
   await prisma.emailDetail.createMany({
     data: [
       {
@@ -21,11 +21,6 @@ async function main() {
       },
     ],
   });
+
   console.log("✅ Email details seeded!");
 }
-
-main()
-  .catch((e) => console.error(e))
-  .finally(async () => {
-    await prisma.$disconnect();
-  });

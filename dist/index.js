@@ -1,0 +1,26 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
+const authRoutes_js_1 = __importDefault(require("./routes/authRoutes.js"));
+const customerRoutes_js_1 = __importDefault(require("./routes/customerRoutes.js"));
+const domainDetailsRoutes_1 = __importDefault(require("./routes/domainDetailsRoutes"));
+const emailDetailsRoutes_1 = __importDefault(require("./routes/emailDetailsRoutes"));
+const websiteDetailsRoutes_1 = __importDefault(require("./routes/websiteDetailsRoutes"));
+const serviceDetailsRoutes_1 = __importDefault(require("./routes/serviceDetailsRoutes"));
+const productDetailsRoutes_1 = __importDefault(require("./routes/productDetailsRoutes"));
+const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
+app.use(express_1.default.json());
+app.use("/api/auth", authRoutes_js_1.default);
+app.use("/api/customers", customerRoutes_js_1.default);
+app.use("/api/domain-details", domainDetailsRoutes_1.default);
+app.use("/api/email-details", emailDetailsRoutes_1.default);
+app.use("/api/website-details", websiteDetailsRoutes_1.default);
+app.use("/api/service-details", serviceDetailsRoutes_1.default);
+app.use("/api/product-details", productDetailsRoutes_1.default);
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

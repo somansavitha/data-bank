@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "generate": "prisma generate",
-    "start": "npx prisma generate && node dist/index.js"
+    "dev": "npx tsx src/index.ts",
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "generate": "npx prisma generate",
+    "seed": "npx tsx prisma/seedAll.ts"
   },
   "keywords": [],
   "author": "",
@@ -23,6 +25,8 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10"
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.9.1",
+    "typescript": "^5.9.3"
   }
 }

@@ -1,19 +1,16 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
+const prisma = new client_1.PrismaClient();
 async function main() {
   console.log("🌱 Seeding domain details...");
-
   // Check if any customers exist first
   const customers = await prisma.customer.findMany();
   if (customers.length === 0) {
     console.log("⚠️ No customers found! Please seed customers first.");
     return;
   }
-
   const wipro = customers.find((c) => c.customerName === "Wipro Technologies");
-
   // Insert domain details
   await prisma.domainDetail.createMany({
     data: [
@@ -43,10 +40,8 @@ async function main() {
       },
     ],
   });
-
   console.log("✅ Domain details seeded successfully!");
 }
-
 main()
   .catch((e) => {
     console.error("❌ Error seeding domain details:", e);

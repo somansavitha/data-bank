@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+export async function seedCustomers(prisma: PrismaClient) {
+  console.log("🌱 Seeding customer data...");
 
-async function main() {
-  // 👇 If you have an admin user, fetch its ID
+  // Fetch admin user (created in seedUser.ts)
   const admin = await prisma.user.findFirst({
     where: { username: "admin" },
   });
@@ -13,7 +13,6 @@ async function main() {
     return;
   }
 
-  // 👇 Dummy customer data
   const customers = [
     {
       customerName: "Wipro Technologies",
@@ -61,13 +60,5 @@ async function main() {
     });
   }
 
-  console.log("✅ Dummy customer records added successfully!");
+  console.log("✅ Customer data seeded successfully!");
 }
-
-main()
-  .catch((e) => {
-    console.error("❌ Error seeding customers:", e);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });

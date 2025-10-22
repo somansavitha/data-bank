@@ -3,7 +3,11 @@ import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
-export const addCustomer = async (req: Request, res: Response) => {
+interface AuthenticatedRequest extends Request {
+  user?: { id: string; email?: string };
+}
+
+export const addCustomer = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const { customerName, address, phoneNo, contactPerson, contactNo, email } = req.body;
 
@@ -17,7 +21,7 @@ export const addCustomer = async (req: Request, res: Response) => {
         contactPerson,
         contactNo,
         email,
-        userId: req.user.id,
+        userId: req.user?.id,
       },
     });
 
@@ -28,10 +32,10 @@ export const addCustomer = async (req: Request, res: Response) => {
   }
 };
 
-export const getCustomers = async (req: Request, res: Response) => {
+export const getCustomers = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const customers = await prisma.customer.findMany({
-      where: { userId: req.user.id },
+      where: { userId: req.user?.id },
       orderBy: { createdAt: "desc" },
     });
     res.json(customers);

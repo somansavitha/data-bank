@@ -1,8 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
-
-async function main() {
+export async function seedWebsite(prisma: PrismaClient) {
   console.log("🌱 Seeding website details...");
 
   await prisma.websiteDetail.createMany({
@@ -32,9 +30,3 @@ async function main() {
 
   console.log("✅ Website details seeded!");
 }
-
-main()
-  .catch((e) => console.error(e))
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
