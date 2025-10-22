@@ -1,0 +1,123 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  username String    @unique
+  password String
+  customers Customer[]
+}
+
+model Customer {
+  id            Int      @id @default(autoincrement())
+  customerName  String
+  address       String?
+  phoneNo       String?
+  contactPerson String?
+  contactNo     String?
+  email         String?  @unique   
+  userId        Int?
+  user          User?    @relation(fields: [userId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relation
+  domainDetails DomainDetail[]
+  emailDetails EmailDetail[] 
+  websiteDetails WebsiteDetail[]
+  serviceDetails ServiceDetail[]
+  productDetails ProductDetail[]
+}
+
+model DomainDetail {
+  id                 Int      @id @default(autoincrement())
+  customerId         Int?     // optional link to Customer table
+  domainName         String
+  websiteUrl         String?
+  registrar          String?
+  loginUrl           String?
+  username           String?
+  password           String?
+  pin                String?
+  activationDate     DateTime?
+  expiryDate         DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Optional relation (if you want to link with Customer)
+  customer       Customer? @relation(fields: [customerId], references: [id])
+}
+
+model EmailDetail {
+  id              Int       @id @default(autoincrement())
+  imap            String?
+  loginId         String
+  serviceProvider String
+  password        String?
+  customerId      Int?
+  customer        Customer? @relation(fields: [customerId], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model WebsiteDetail {
+  id             Int       @id @default(autoincrement())
+  adminPanelUrl  String?
+  websiteLink    String?
+  username       String?
+  password       String?
+  serverDetails  String?
+  serverUser     String?
+  serverPassword String?
+  customerId     Int?
+  customer       Customer? @relation(fields: [customerId], references: [id])
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model ServiceDetail {
+  id                Int       @id @default(autoincrement())
+  customerId        Int
+  customer          Customer  @relation(fields: [customerId], references: [id])
+  serviceType       String
+  invoiceNo         String
+  invoiceDate       DateTime
+  warrantyDays      Int?
+  remarks           String?
+  purchaseOrderNo   String?
+  purchaseOrderDate DateTime?
+  warrantyStartDate DateTime?
+  warrantyEndDate   DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+  
+model ProductDetail {
+  id                Int      @id @default(autoincrement())
+  customerId        Int
+  productType       String
+  invoiceNo         String
+  invoiceDate       DateTime
+  warrantyDays      Int?
+  simNumber         String?
+  phoneNumber       String?
+  remarks           String?
+  purchaseOrderNo   String?
+  purchaseOrderDate DateTime?
+  warrantyStartDate DateTime?
+  warrantyEndDate   DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id])
+}
+
+
+
+
