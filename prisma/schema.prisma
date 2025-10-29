@@ -114,8 +114,22 @@ model ProductDetail {
   warrantyEndDate   DateTime?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  productItems       ProductItem[] 
 
   customer Customer @relation(fields: [customerId], references: [id])
+}
+
+model ProductItem {
+  id                 Int             @id @default(autoincrement())
+  productDetailId    Int
+  productDetail      ProductDetail @relation(fields: [productDetailId], references: [id])
+  productName        String
+  modelNo            String
+  quantity_          Int
+  serialNumbers      Json?   
+  warrantyDays       Int?
+  warrantyStartDate  DateTime?
+  warrantyEndDate    DateTime?
 }
 
 

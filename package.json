@@ -7,7 +7,7 @@
     "build": "npx tsc",
     "start": "node dist/index.js",
     "generate": "npx prisma generate",
-    "seed": "npx tsx prisma/seedAll.ts"
+    "seed": "npx tsx prisma/seeders/seedAll.ts"
   },
   "keywords": [],
   "author": "",
