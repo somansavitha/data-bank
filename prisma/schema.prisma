@@ -103,7 +103,7 @@ model ProductDetail {
   customerId        Int
   productType       String
   invoiceNo         String
-  invoiceDate       DateTime
+  invoiceDate       DateTime?
   warrantyDays      Int?
   simNumber         String?
   phoneNumber       String?

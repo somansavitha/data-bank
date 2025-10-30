@@ -31,10 +31,23 @@ export const addProductDetail = async (req: Request, res: Response) => {
     const data = req.body;
 
     const { productDetails = [], ...mainData } = data;
-
+    const toDate = (val: any) => {
+      if (!val) return new Date(); // fallback if undefined
+      const date = new Date(val);
+      return isNaN(date.getTime()) ? new Date() : date;
+    };
+   
     const newProduct = await prisma.productDetail.create({
       data: {
-        ...mainData,
+         customerId: Number(mainData.customerId),
+        productType: mainData.productType,
+        invoiceNo: mainData.invoiceNo,
+        invoiceDate: toDate(mainData.invoiceDate),
+        simNumber: mainData.simNumber,
+        phoneNumber: mainData.phoneNumber,
+        remarks: mainData.remarks,
+        purchaseOrderNo: mainData.purchaseOrderNo,
+        purchaseOrderDate: toDate(mainData.purchaseOrderDate),
         productItems: {
           create: productDetails.map((item: any) => ({
             productName: item.productName,
