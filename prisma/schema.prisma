@@ -37,7 +37,7 @@ model Customer {
 
 model DomainDetail {
   id                 Int      @id @default(autoincrement())
-  customerId         Int?     // optional link to Customer table
+  customerId         Int     // optional link to Customer table
   domainName         String
   websiteUrl         String?
   registrar          String?
@@ -51,7 +51,7 @@ model DomainDetail {
   updatedAt          DateTime @updatedAt
 
   // Optional relation (if you want to link with Customer)
-  customer       Customer? @relation(fields: [customerId], references: [id])
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 model EmailDetail {
@@ -60,8 +60,8 @@ model EmailDetail {
   loginId         String
   serviceProvider String
   password        String?
-  customerId      Int?
-  customer        Customer? @relation(fields: [customerId], references: [id])
+  customerId      Int
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
@@ -75,8 +75,8 @@ model WebsiteDetail {
   serverDetails  String?
   serverUser     String?
   serverPassword String?
-  customerId     Int?
-  customer       Customer? @relation(fields: [customerId], references: [id])
+  customerId     Int
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -84,7 +84,7 @@ model WebsiteDetail {
 model ServiceDetail {
   id                Int       @id @default(autoincrement())
   customerId        Int
-  customer          Customer  @relation(fields: [customerId], references: [id])
+  customer          Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
   serviceType       String
   invoiceNo         String
   invoiceDate       DateTime
@@ -114,15 +114,15 @@ model ProductDetail {
   warrantyEndDate   DateTime?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-  productItems       ProductItem[] 
+  productItems      ProductItem[] 
 
-  customer Customer @relation(fields: [customerId], references: [id])
+  customer       Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 }
 
 model ProductItem {
   id                 Int             @id @default(autoincrement())
   productDetailId    Int
-  productDetail      ProductDetail @relation(fields: [productDetailId], references: [id])
+  productDetail      ProductDetail @relation(fields: [productDetailId], references: [id], onDelete: Cascade)
   productName        String
   modelNo            String
   quantity_          Int
