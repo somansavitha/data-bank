@@ -15,8 +15,13 @@ export const getAllProductDetails = async (req: Request, res: Response) => {
       },
       orderBy: { id: "desc" },
     });
+    console.log("Fetched products:", products);
+    const formatted = products.map((p) => ({
+      ...p,
+      sims: Array.isArray(p.sims) ? p.sims : [], // ✅ No parse, just ensure it's an array
+    }));
 
-    res.json(products);
+    res.json(formatted);
   } catch (error) {
     console.error("Error fetching product details:", error);
     res.status(500).json({ message: "Error fetching product details", error });
@@ -43,8 +48,10 @@ export const addProductDetail = async (req: Request, res: Response) => {
         productType: mainData.productType,
         invoiceNo: mainData.invoiceNo,
         invoiceDate: toDate(mainData.invoiceDate),
-        simNumber: mainData.simNumber,
-        phoneNumber: mainData.phoneNumber,
+        sims:
+          Array.isArray(mainData.sims) && mainData.sims.length > 0
+            ? mainData.sims
+            : [],
         remarks: mainData.remarks,
         purchaseOrderNo: mainData.purchaseOrderNo,
         purchaseOrderDate: toDate(mainData.purchaseOrderDate),
@@ -85,12 +92,24 @@ export const updateProductDetail = async (req: Request, res: Response) => {
     const data = req.body;
 
     const { productDetails = [], ...mainData } = data;
+    const toDate = (val: any) => {
+      if (!val) return null;
+      const date = new Date(val);
+      return isNaN(date.getTime()) ? null : date;
+    };
 
     // 1️⃣ Update the main Product Detail
     const updatedProduct = await prisma.productDetail.update({
       where: { id: Number(id) },
       data: {
-        ...mainData,
+        customerId: Number(mainData.customerId),
+        productType: mainData.productType,
+        invoiceNo: mainData.invoiceNo,
+        invoiceDate: toDate(mainData.invoiceDate),
+        sims: mainData.sims ? JSON.stringify(mainData.sims) : undefined, // ✅ store multiple SIMs
+        remarks: mainData.remarks,
+        purchaseOrderNo: mainData.purchaseOrderNo,
+        purchaseOrderDate: toDate(mainData.purchaseOrderDate),
       },
     });
 
@@ -128,7 +147,12 @@ export const updateProductDetail = async (req: Request, res: Response) => {
       },
     });
 
-    res.json(finalProduct);
+    const formattedProduct = {
+      ...finalProduct,
+      sims: finalProduct?.sims ? JSON.parse(finalProduct.sims as any) : [],
+    };
+
+    res.json(formattedProduct);
   } catch (error) {
     console.error("Error updating product detail:", error);
     res.status(500).json({ message: "Error updating product detail", error });

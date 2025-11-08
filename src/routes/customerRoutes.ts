@@ -4,6 +4,7 @@ import {
   getCustomers,
   updateCustomer,
   deleteCustomer,
+  getCustomerById,
 } from "../controllers/customerController.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
 
@@ -14,6 +15,7 @@ router.use(verifyToken);
 
 router.post("/", addCustomer);
 router.get("/", getCustomers);
+router.get("/:id", getCustomerById);
 router.put("/:id", updateCustomer);
 router.delete("/:id", deleteCustomer);
 

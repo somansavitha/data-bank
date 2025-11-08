@@ -105,8 +105,7 @@ model ProductDetail {
   invoiceNo         String
   invoiceDate       DateTime?
   warrantyDays      Int?
-  simNumber         String?
-  phoneNumber       String?
+  sims              Json? 
   remarks           String?
   purchaseOrderNo   String?
   purchaseOrderDate DateTime?

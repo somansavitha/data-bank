@@ -11,6 +11,7 @@ const router = express_1.default.Router();
 router.use(authMiddleware_js_1.verifyToken);
 router.post("/", customerController_js_1.addCustomer);
 router.get("/", customerController_js_1.getCustomers);
+router.get("/:id", customerController_js_1.getCustomerById);
 router.put("/:id", customerController_js_1.updateCustomer);
 router.delete("/:id", customerController_js_1.deleteCustomer);
 exports.default = router;

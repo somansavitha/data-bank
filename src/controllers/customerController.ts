@@ -79,3 +79,38 @@ export const deleteCustomer = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error deleting customer" });
   }
 };
+
+export const getCustomerById = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Customer ID is required" });
+    }
+
+    const customer = await prisma.customer.findUnique({
+      where: { id: Number(id) },
+      include: {
+        domainDetails: true,
+        emailDetails: true,
+        websiteDetails: true,
+        serviceDetails: true,
+        productDetails: {
+          include: {
+            productItems: true, 
+          },
+        },
+      },
+    });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Customer not found" });
+    }
+
+    res.status(200).json(customer);
+  } catch (error) {
+    console.error("Error fetching customer details:", error);
+    res.status(500).json({ message: "Error fetching customer details" });
+  }
+};
+
