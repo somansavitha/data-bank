@@ -2,6 +2,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
+  if (process.env.NODE_ENV === "production") {
+    console.log("🚫 Skipping seeding in production environment.");
+    return;
+  }
   console.log("🌱 Starting all seeders...");
 
   // ✅ Step 1: Seed User (from TypeScript)
