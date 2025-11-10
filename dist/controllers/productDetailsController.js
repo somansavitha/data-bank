@@ -103,7 +103,10 @@ const updateProductDetail = async (req, res) => {
                 productType: mainData.productType,
                 invoiceNo: mainData.invoiceNo,
                 invoiceDate: toDate(mainData.invoiceDate),
-                sims: mainData.sims ? JSON.stringify(mainData.sims) : undefined, // ✅ store multiple SIMs
+                sims: Array.isArray(mainData.sims) && mainData.sims.length > 0
+                    ? mainData.sims
+                    : [],
+                //sims: mainData.sims ? JSON.stringify(mainData.sims) : undefined, // ✅ store multiple SIMs
                 remarks: mainData.remarks,
                 purchaseOrderNo: mainData.purchaseOrderNo,
                 purchaseOrderDate: toDate(mainData.purchaseOrderDate),
@@ -142,7 +145,11 @@ const updateProductDetail = async (req, res) => {
         });
         const formattedProduct = {
             ...finalProduct,
-            sims: finalProduct?.sims ? JSON.parse(finalProduct.sims) : [],
+            sims: typeof finalProduct?.sims === "string"
+                ? JSON.parse(finalProduct.sims)
+                : Array.isArray(finalProduct?.sims)
+                    ? finalProduct.sims
+                    : [],
         };
         res.json(formattedProduct);
     }
