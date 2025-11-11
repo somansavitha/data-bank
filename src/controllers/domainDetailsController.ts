@@ -5,15 +5,54 @@ const prisma = new PrismaClient();
 // ✅ Get all domain details
 export const getAllDomainDetails = async (req: Request, res: Response) => {
   try {
-    const domains = await prisma.domainDetail.findMany({
-      include: {
-        customer: {
-          select: { customerName: true }, // ✅ only fetch name
-        },
-      },
-      orderBy: { createdAt: "desc" },
+    const { page, limit } = req.query;
+
+    let domains;
+    let total;
+    let totalPages = 1;
+
+    // ✅ If both page and limit are provided → apply pagination
+    if (page && limit) {
+      const skip = (Number(page) - 1) * Number(limit);
+      const take = Number(limit);
+
+      [domains, total] = await Promise.all([
+        prisma.domainDetail.findMany({
+          include: {
+            customer: {
+              select: { customerName: true }, // ✅ only fetch customerName
+            },
+          },
+          orderBy: { createdAt: "desc" },
+          skip,
+          take,
+        }),
+        prisma.domainDetail.count(),
+      ]);
+
+      totalPages = Math.ceil(total / take);
+    } else {
+      // ✅ Otherwise → return all domain details (no pagination)
+      [domains, total] = await Promise.all([
+        prisma.domainDetail.findMany({
+          include: {
+            customer: {
+              select: { customerName: true },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.domainDetail.count(),
+      ]);
+    }
+
+    // ✅ Unified response structure
+    res.json({
+      data: domains,
+      total,
+      page: page ? Number(page) : 1,
+      totalPages,
     });
-    res.json(domains);
   } catch (error) {
     console.error("Error fetching domain details:", error);
     res.status(500).json({ message: "Error fetching domain details" });

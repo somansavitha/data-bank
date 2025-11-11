@@ -10,7 +10,7 @@ import productDetailsRoutes from "./routes/productDetailsRoutes";
 
 const app = express();
 app.use(cors({
-    origin: ["https://abctechs.recordhub.org"], // your frontend domain
+    origin: "*", // your frontend domain
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true, // if using cookies or auth headers
   }));

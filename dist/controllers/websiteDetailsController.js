@@ -6,14 +6,50 @@ const prisma = new client_1.PrismaClient();
 // ✅ Get all website details
 const getWebsiteDetails = async (req, res) => {
     try {
-        const websites = await prisma.websiteDetail.findMany({
-            include: {
-                customer: {
-                    select: { id: true, customerName: true },
-                },
-            },
+        const { page, limit } = req.query;
+        let websites;
+        let total;
+        let totalPages = 1;
+        // ✅ If both page and limit are provided → apply pagination
+        if (page && limit) {
+            const skip = (Number(page) - 1) * Number(limit);
+            const take = Number(limit);
+            [websites, total] = await Promise.all([
+                prisma.websiteDetail.findMany({
+                    include: {
+                        customer: {
+                            select: { id: true, customerName: true }, // ✅ fetch only relevant customer info
+                        },
+                    },
+                    orderBy: { createdAt: "desc" },
+                    skip,
+                    take,
+                }),
+                prisma.websiteDetail.count(),
+            ]);
+            totalPages = Math.ceil(total / take);
+        }
+        else {
+            // ✅ Otherwise → return all website details (no pagination)
+            [websites, total] = await Promise.all([
+                prisma.websiteDetail.findMany({
+                    include: {
+                        customer: {
+                            select: { id: true, customerName: true },
+                        },
+                    },
+                    orderBy: { createdAt: "desc" },
+                }),
+                prisma.websiteDetail.count(),
+            ]);
+        }
+        // ✅ Unified response structure
+        res.json({
+            data: websites,
+            total,
+            page: page ? Number(page) : 1,
+            totalPages,
         });
-        res.json(websites);
     }
     catch (error) {
         console.error("Error fetching website details:", error);

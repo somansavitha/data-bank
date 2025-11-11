@@ -8,25 +8,68 @@ const prisma = new PrismaClient();
  */
 export const getAllProductDetails = async (req: Request, res: Response) => {
   try {
-    const products = await prisma.productDetail.findMany({
-      include: {
-        customer: true,
-        productItems: true, // 👈 include related items
-      },
-      orderBy: { id: "desc" },
-    });
-    console.log("Fetched products:", products);
+    const { page, limit } = req.query;
+
+    let products;
+    let total;
+    let totalPages = 1;
+
+    // ✅ If both page and limit are provided → apply pagination
+    if (page && limit) {
+      const skip = (Number(page) - 1) * Number(limit);
+      const take = Number(limit);
+
+      [products, total] = await Promise.all([
+        prisma.productDetail.findMany({
+          include: {
+            customer: {
+              select: { customerName: true }, // ✅ fetch only customerName
+            },
+            productItems: true, // ✅ include related product items
+          },
+          orderBy: { id: "desc" },
+          skip,
+          take,
+        }),
+        prisma.productDetail.count(),
+      ]);
+
+      totalPages = Math.ceil(total / take);
+    } else {
+      // ✅ Otherwise → return all product details (no pagination)
+      [products, total] = await Promise.all([
+        prisma.productDetail.findMany({
+          include: {
+            customer: {
+              select: { customerName: true },
+            },
+            productItems: true,
+          },
+          orderBy: { id: "desc" },
+        }),
+        prisma.productDetail.count(),
+      ]);
+    }
+
+    // ✅ Format products (ensure sims is an array)
     const formatted = products.map((p) => ({
       ...p,
-      sims: Array.isArray(p.sims) ? p.sims : [], // ✅ No parse, just ensure it's an array
+      sims: Array.isArray(p.sims) ? p.sims : [],
     }));
 
-    res.json(formatted);
+    // ✅ Unified response structure
+    res.json({
+      data: formatted,
+      total,
+      page: page ? Number(page) : 1,
+      totalPages,
+    });
   } catch (error) {
     console.error("Error fetching product details:", error);
     res.status(500).json({ message: "Error fetching product details", error });
   }
 };
+
 
 /**
  * ✅ Add Product Detail (with nested Product Items)

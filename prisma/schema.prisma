@@ -17,11 +17,11 @@ model User {
 model Customer {
   id            Int      @id @default(autoincrement())
   customerName  String
-  address       String?
+  address       String
   phoneNo       String?
   contactPerson String?
-  contactNo     String?
-  email         String?  @unique   
+  contactNo     String
+  email         String?    
   userId        Int?
   user          User?    @relation(fields: [userId], references: [id])
   createdAt     DateTime @default(now())

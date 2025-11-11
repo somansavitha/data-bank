@@ -5,14 +5,54 @@ const prisma = new PrismaClient();
 // ✅ Get all emails with related customer
 export const getEmailDetails = async (req: Request, res: Response) => {
   try {
-    const emails = await prisma.emailDetail.findMany({
-      include: { customer: true },
-      orderBy: { createdAt: "desc" },
+    const { page, limit } = req.query;
+
+    let emails;
+    let total;
+    let totalPages = 1;
+
+    if (page && limit) {
+      const skip = (Number(page) - 1) * Number(limit);
+      const take = Number(limit);
+
+      [emails, total] = await Promise.all([
+        prisma.emailDetail.findMany({
+          include: {
+            customer: {
+              select: { customerName: true }, // ✅ only fetch customerName
+            },
+          },
+          orderBy: { createdAt: "desc" },
+          skip,
+          take,
+        }),
+        prisma.emailDetail.count(),
+      ]);
+
+      totalPages = Math.ceil(total / take);
+    } else {
+      [emails, total] = await Promise.all([
+        prisma.emailDetail.findMany({
+          include: {
+            customer: {
+              select: { customerName: true },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+        }),
+        prisma.emailDetail.count(),
+      ]);
+    }
+
+    res.json({
+      data: emails,
+      total,
+      page: page ? Number(page) : 1,
+      totalPages,
     });
-    res.json(emails);
   } catch (error) {
     console.error("Error fetching email details:", error);
-    res.status(500).json({ message: "Error fetching email details", error });
+    res.status(500).json({ message: "Error fetching email details" });
   }
 };
 
